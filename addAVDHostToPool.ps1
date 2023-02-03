@@ -20,7 +20,7 @@ $AVDBootInstaller        = 'AVD-Bootloader.msi'
 #    Test/Create Temp Directory    #
 ####################################
 if((Test-Path c:\temp) -eq $false) {
-    Add-Content -LiteralPath C:\New-AVDSessionHost.log "Create C:\temp Directory"
+    Add-Content -LiteralPath C:\temp\New-AVDSessionHost.log "Create C:\temp Directory"
     Write-Host `
         -ForegroundColor Cyan `
         -BackgroundColor Black `
@@ -28,30 +28,30 @@ if((Test-Path c:\temp) -eq $false) {
     New-Item -Path c:\temp -ItemType Directory
 }
 else {
-    Add-Content -LiteralPath C:\New-AVDSessionHost.log "C:\temp Already Exists"
+    Add-Content -LiteralPath C:\temp\New-AVDSessionHost.log "C:\temp Already Exists"
     Write-Host `
         -ForegroundColor Yellow `
         -BackgroundColor Black `
         "temp directory already exists"
 }
-New-Item -Path c:\ -Name New-AVDSessionHost.log -ItemType File
+New-Item -Path c:\temp\ -Name New-AVDSessionHost.log -ItemType File
 Add-Content `
--LiteralPath C:\New-AVDSessionHost.log `
+-LiteralPath C:\temp\New-AVDSessionHost.log `
 "
 RegistrationToken = $RegistrationToken
 "
 #################################
 #    Download AVD bits    #
 #################################
-Add-Content -LiteralPath C:\New-AVDSessionHost.log "Downloading WVD Boot Loader"
+Add-Content -LiteralPath C:\temp\New-AVDSessionHost.log "Downloading WVD Boot Loader"
     Invoke-WebRequest -Uri $AVDBootURI -OutFile "$LocalAVDpath$AVDBootInstaller"
-Add-Content -LiteralPath C:\New-AVDSessionHost.log "Downloading WVD Agent"
+Add-Content -LiteralPath C:\temp\New-AVDSessionHost.log "Downloading WVD Agent"
     Invoke-WebRequest -Uri $AVDAgentURI -OutFile "$LocalAVDpath$AVDAgentInstaller"
 
 ################################
 #    Install WVD Componants    #
 ################################
-Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Bootloader"
+Add-Content -LiteralPath C:\temp\New-AVDSessionHost.log "Installing AVD Bootloader"
 $bootloader_deploy_status = Start-Process `
     -FilePath "msiexec.exe" `
     -ArgumentList "/i $AVDBootInstaller", `
@@ -63,10 +63,10 @@ $bootloader_deploy_status = Start-Process `
     -Wait `
     -Passthru
 $sts = $bootloader_deploy_status.ExitCode
-Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Bootloader Complete"
+Add-Content -LiteralPath C:\temp\New-AVDSessionHost.log "Installing AVD Bootloader Complete"
 Write-Output "Installing RDAgentBootLoader on VM Complete. Exit code=$sts`n"
 Wait-Event -Timeout 5
-Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Agent"
+Add-Content -LiteralPath C:\temp\New-AVDSessionHost.log "Installing AVD Agent"
 Write-Output "Installing RD Infra Agent on VM $AgentInstaller`n"
 $agent_deploy_status = Start-Process `
     -FilePath "msiexec.exe" `
@@ -78,10 +78,10 @@ $agent_deploy_status = Start-Process `
         "REGISTRATIONTOKEN=$RegistrationToken", "/l* $LocalAVDpath\AgentInstall.txt" `
     -Wait `
     -Passthru
-Add-Content -LiteralPath C:\New-AVDSessionHost.log "WVD Agent Install Complete"
+Add-Content -LiteralPath C:\temp\New-AVDSessionHost.log "WVD Agent Install Complete"
 Wait-Event -Timeout 5
 ##########################
 #    Restart Computer    #
 ##########################
-Add-Content -LiteralPath C:\New-AVDSessionHost.log "Process Complete - REBOOT"
+Add-Content -LiteralPath C:\temp\New-AVDSessionHost.log "Process Complete - REBOOT"
 Restart-Computer -Force 
