@@ -1,0 +1,1 @@
+.\Windows_VDOT.ps1 -Optimizations All -AdvancedOptimizations All -Verbose -AcceptEula -Restart
